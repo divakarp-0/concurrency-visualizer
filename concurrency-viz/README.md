@@ -1,2 +1,0 @@
-
-Concurrrency visualizer

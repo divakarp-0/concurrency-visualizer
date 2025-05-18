@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>🚗 Semaphore Simulation – Parking Lot</title>
+     <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f4ff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        .info {
+            font-size: 0.95em;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .dashboard {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .dash-item {
+            background: #fff;
+            border: 2px solid #ccc;
+            padding: 10px 15px;
+            border-radius: 8px;
+            min-width: 150px;
+        }
+
+        .dash-item h3 {
+            margin: 5px 0;
+            font-size: 1.1em;
+        }
+
+        #road {
+            background-image: url('./backend/assets/road.jpg'); /* Path to your road image */
+            background-size: cover;
+            height: 200px;
+            width: 100%;
+            position: relative;
+        }
+
+        #lot {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px auto;
+            flex-wrap: wrap;
+            max-width: 600px;
+        }
+
+        .spot {
+            width: 100px;
+            height: 60px;
+            border: 3px dashed #666;
+            background: #fafafa;
+            position: relative;
+            border-radius: 8px;
+            background-image: url(./backend/assets/parking.jpg); /* Path to your parking spot image */
+            background-size: cover;
+        }
+
+        .car {
+            width: 90px;
+            height: 50px;
+            background-image: url(./backend/assets/car.jpg); /* Path to your car image */
+            background-size: cover;
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            border-radius: 5px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .queue {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .waiting-car {
+            width: 60px;
+            height: 30px;
+            background: #FF4136;
+            color: #fff;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 4px;
+            font-size: 12px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .buttons {
+            margin: 20px;
+        }
+
+        button {
+            padding: 10px 18px;
+            margin: 5px;
+            background: #2ECC40;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #27ae60;
+        }
+
+        .semaphore-view {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .sem {
+            display: inline-block;
+            padding: 10px;
+            border-radius: 6px;
+            color: white;
+            min-width: 90px;
+            font-weight: bold;
+        }
+
+        .sem.empty {
+            background-color: #28a745;
+        }
+
+        .sem.full {
+            background-color: #dc3545;
+        }
+
+        .sem.mutex {
+            background-color: #ffc107;
+            color: black;
+            background-image: url('./backend/assets/lock.png'); /* Path to your lock image (locked state) */
+            background-size: contain;
+            background-repeat: no-repeat;
+            padding-left: 35px;
+            /* Initially showing locked state */
+        }
+
+        .sem.mutex-unlocked {
+            background-color: #ffc107;
+            color: black;
+            background-image: url('./backend/assets/unlock.png'); /* Path to your unlock image (unlocked state) */
+            background-size: contain;
+            background-repeat: no-repeat;
+            padding-left: 35px;
+            /* This will change to unlocked state */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🚗 Semaphore Simulation – Parking Lot</h1>
+    <p class="info">Simulates a producer-consumer problem using counting semaphores.</p>
+
+    <div class="dashboard">
+        <div class="dash-item">
+            <h3>🅿️ Total Spots: <span id="totalSpots">5</span></h3>
+            <h3>Occupied: <span id="occupied">0</span></h3>
+        </div>
+        <div class="dash-item">
+            <h3>⏱ Waiting Cars: <span id="waitingCount">0</span></h3>
+            <h3>Status: <span id="status">Idle</span></h3>
+        </div>
+    </div>
+
+    <div id="road"></div>
+    <div id="lot"></div>
+
+    <div class="buttons">
+        <button onclick="carArrives()">Car Arrives</button>
+        <button onclick="carLeaves()">Car Leaves</button>
+        <button onclick="toggleAuto()">⏳ Toggle Auto Mode</button>
+    </div>
+
+    <div>
+        <h3>🚦 Waiting Queue</h3>
+        <div class="queue" id="queue"></div>
+    </div>
+
+    <div class="semaphore-view">
+        <div class="sem empty">🟢 Empty: <span id="semEmpty">5</span></div>
+        <div class="sem full">🔴 Full: <span id="semFull">0</span></div>
+        <div class="sem mutex" id="semMutex">🟡 Mutex: <span id="semMutexState">Locked</span></div>
+    </div>
+
+    <script>
+        const lotSize = 5;
+        let lot = document.getElementById('lot');
+        let queueDiv = document.getElementById('queue');
+        let parkingSpots = new Array(lotSize).fill(null);
+        let waitingQueue = [];
+
+        // Semaphores
+        let empty = lotSize;
+        let full = 0;
+        let mutex = 1; // 1 = locked, 0 = unlocked
+        let autoMode = false;
+        let interval;
+
+        function updateUI() {
+            lot.innerHTML = '';
+            for (let i = 0; i < lotSize; i++) {
+                const spot = document.createElement('div');
+                spot.classList.add('spot');
+                if (parkingSpots[i]) {
+                    const car = document.createElement('div');
+                    car.classList.add('car');
+                    car.textContent = parkingSpots[i];
+                    spot.appendChild(car);
+                }
+                lot.appendChild(spot);
+            }
+
+            queueDiv.innerHTML = '';
+            waitingQueue.forEach(car => {
+                const waitingCar = document.createElement('div');
+                waitingCar.classList.add('waiting-car');
+                waitingCar.textContent = car;
+                queueDiv.appendChild(waitingCar);
+            });
+
+            document.getElementById('occupied').textContent = parkingSpots.filter(Boolean).length;
+            document.getElementById('waitingCount').textContent = waitingQueue.length;
+            document.getElementById('semEmpty').textContent = empty;
+            document.getElementById('semFull').textContent = full;
+
+            // Mutex visual update
+            const mutexBox = document.getElementById('semMutex');
+            if (mutex === 1) {
+                mutexBox.classList.remove('mutex-unlocked');
+                mutexBox.classList.add('mutex');
+                document.getElementById('semMutexState').textContent = 'Locked';
+            } else {
+                mutexBox.classList.remove('mutex');
+                mutexBox.classList.add('mutex-unlocked');
+                document.getElementById('semMutexState').textContent = 'Unlocked';
+            }
+        }
+
+        function carArrives() {
+            const carID = 'Car ' + (Math.floor(Math.random() * 900) + 100);
+            document.getElementById('status').textContent = `🚙 ${carID} arrives`;
+
+            if (empty > 0 && mutex === 1) {
+                mutex = 0;
+                updateUI();
+
+                const index = parkingSpots.indexOf(null);
+                parkingSpots[index] = carID;
+                empty--;
+                full++;
+
+                mutex = 1;
+            } else {
+                waitingQueue.push(carID);
+            }
+
+            updateUI();
+        }
+
+        function carLeaves() {
+            document.getElementById('status').textContent = `🚘 Car leaves`;
+
+            if (full > 0 && mutex === 1) {
+                mutex = 0;
+                updateUI();
+
+                const index = parkingSpots.findIndex(car => car !== null);
+                parkingSpots[index] = null;
+                full--;
+                empty++;
+
+                if (waitingQueue.length > 0) {
+                    const nextCar = waitingQueue.shift();
+                    parkingSpots[index] = nextCar;
+                    full++;
+                    empty--;
+                }
+
+                mutex = 1;
+            }
+
+            updateUI();
+        }
+
+        function toggleAuto() {
+            autoMode = !autoMode;
+            document.getElementById('status').textContent = autoMode ? "🔄 Auto Mode On" : "🛑 Auto Mode Off";
+            if (autoMode) {
+                interval = setInterval(() => {
+                    Math.random() < 0.6 ? carArrives() : carLeaves();
+                }, 1500);
+            } else {
+                clearInterval(interval);
+            }
+        }
+
+        updateUI();
+    </script>
+</body>
+
+</html>

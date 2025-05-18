@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Concurrency Visualizer</title>
+
+  <!-- AOS Animation Library -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet"
+        href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
+        crossorigin="anonymous" />
+</head>
+
+<body>
+
+  <section class="simulations" style="padding: 50px 10%; background: #f9f9f9;">
+  <h1 style="text-align:center; margin-bottom: 40px;">Concurrency Problem Simulations</h1>
+  <div class="simulation-grid">
+    <!-- CPU Scheduling -->
+    <div class="sim-card">
+      <h2>CPU Scheduling Simulator</h2>
+      <p>
+        Virtual lab for all types of scheduling algorithms which will help you understand the algorithms in a better way.
+      </p>
+      <a href="./backend/ganttcharts.html" class="hero-btn">START SIMULATION</a>
+    </div>
+
+    <!-- Producer-Consumer -->
+    <div class="sim-card">
+      <h2>Producer Consumer Problem</h2>
+      <p>
+        A classic synchronization problem. Visualized using semaphores to manage access to shared resources.
+      </p>
+      <a href="./backend/producerconsumer.html" class="hero-btn">START SIMULATION</a>
+    </div>
+
+    <!-- Banker's Algorithm -->
+    <div class="sim-card">
+      <h2>Banker's Algorithm</h2>
+      <p>
+        Simulates resource allocation and deadlock avoidance using the Banker's algorithm in a multi-process system.
+      </p>
+      <a href="banker.html" class="hero-btn">START SIMULATION</a>
+    </div>
+
+    <!-- Dining Philosophers -->
+    <div class="sim-card">
+      <h2>Dining Philosopher Problem</h2>
+      <p>
+        Simulates synchronization using mutexes to avoid deadlocks and race conditions among philosophers.
+      </p>
+      <a href="./backend/diningphilosophers.html" class="hero-btn">START SIMULATION</a>
+    </div>
+  </div>
+</section>
+
+
+  <!-- Course Section -->
+  <section class="course">
+    <h1>Need for Algorithm</h1>
+    <p>Main purposes of CPU Scheduling Algorithms are listed below:</p>
+
+    <div class="row" data-aos="zoom-in-up">
+      <div class="course-colomn">
+        <h3>CPU Utilization</h3>
+        <p>CPU scheduling allows one process to use the CPU while another is waiting, maximizing CPU utilization and system efficiency.</p>
+      </div>
+      <div class="course-colomn">
+        <h3>Max Performance</h3>
+        <p>Ensures the CPU is busy most of the time, ideally achieving 40-90% utilization depending on system load.</p>
+      </div>
+      <div class="course-colomn">
+        <h3>Time Minimization</h3>
+        <p>Minimizes waiting time, response time, and turnaround time through the use of efficient scheduling algorithms.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blog Section -->
+  <section id="blog">
+    <div class="blog-heading">
+      <h1>Popular Blogs</h1>
+    </div>
+
+    <div class="blog-container" data-aos="zoom-in-up">
+      <!-- Blog Boxes (Add more as needed) -->
+      <!-- Blog 1 -->
+      <div class="blog-box">
+        <div class="blog-img">
+          <img src="./images/CPU Scheduling_3.PNG" alt="Blog">
+        </div>
+        <div class="blog-text">
+          <span>18 July / Operating System</span>
+          <a href="https://www.fusion-reactor.com/blog/multithreading-and-multiprocessing/" class="blog-title">Multithreading vs Multiprocessing?</a>
+          <p>In multiprocessing, many processes are executed simultaneously. While in multithreading, many threads of a process run in parallel.</p>
+          <a href="https://www.fusion-reactor.com/blog/multithreading-and-multiprocessing/">Read More</a>
+        </div>
+      </div>
+
+      <!-- Blog 2 -->
+      <div class="blog-box">
+        <div class="blog-img">
+          <img src="./images/CPU Scheduling_4.PNG" alt="Blog">
+        </div>
+        <div class="blog-text">
+          <span>29 Jan / Operating System</span>
+          <a href="https://www.eletimes.com/microprocessor-vs-microcontroller-what-is-the-difference" class="blog-title">Microcontroller vs Microprocessor</a>
+          <p>Understand the differences in hardware, purpose, and power usage between microcontrollers and microprocessors.</p>
+          <a href="https://www.eletimes.com/microprocessor-vs-microcontroller-what-is-the-difference">Read More</a>
+        </div>
+      </div>
+
+      <div class="blog-container" data-aos="zoom-in-up">
+            <div class="blog-box">
+                <div class="blog-img">
+                    <img src="./images/CPU Scheduling_5.PNG" alt="Blog">
+                </div>
+
+                <div class="blog-text">
+                    <span>9 Feb /Operating System</span>
+                    <a href="https://www.tutorialspoint.com/semaphores-in-operating-system" class="blog-title">What is Semaphore?</a>
+                    <p>a semaphore is a variable or abstract data type used to control access to a common resource by...</p>
+                    <a href="https://www.tutorialspoint.com/semaphores-in-operating-system" >Read More</a>
+                </div>
+            </div>
+
+            <div class="blog-box">
+                <div class="blog-img">
+                    <img src="./images/CPU Scheduling_6.PNG" alt="Blog">
+                </div>
+
+                <div class="blog-text">
+                    <span>19 Jan /Operating System</span>
+                    <a href="https://www.geeksforgeeks.org/introduction-of-deadlock-in-operating-system/" class="blog-title">What is Deadlock?</a>
+                    <p>A deadlock is a condition that may happen in a system composed of multiple processes that can access...</p>
+                    <a href="https://www.geeksforgeeks.org/introduction-of-deadlock-in-operating-system/" >Read More</a>
+                </div>
+            </div>
+
+            <div class="blog-box">
+                <div class="blog-img">
+                    <img src="./images/CPU Scheduling_7.PNG" alt="Blog">
+                </div>
+
+                <div class="blog-text">
+                    <span>18 May /Operating System</span>
+                    <a href="https://www.techopedia.com/definition/1115/storage#:~:text=Storage%20is%20a%20process%20through,data%2C%20either%20temporarily%20or%20permanently." class="blog-title">What is Storage ?</a>
+                    <p>Storage is a process through which digital data is saved within a data storage device by means of...</p>
+                    <a href="https://www.techopedia.com/definition/1115/storage#:~:text=Storage%20is%20a%20process%20through,data%2C%20either%20temporarily%20or%20permanently." >Read More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <section class="cta" data-aos="zoom-in-up">
+        <h1>Learn about all types Algorithm<br> Click Below!</h1>
+        <a href="./docs.html" class="hero-btn">Click Here</a>
+    </section>
+    
+
+  <!-- Footer -->
+  <section class="footer">
+    
+  </section>
+
+  <!-- JavaScript -->
+  <script>
+    var navLinks = document.getElementById("navLinks");
+
+    function showMenu() {
+      navLinks.style.right = "0";
+    }
+
+    function hideMenu() {
+      navLinks.style.right = "-200px";
+    }
+  </script>
+
+  <!-- AOS Animation Init -->
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      offset: 100,
+      duration: 800
+    });
+  </script>
+
+</body>
+
+</

@@ -96,14 +96,13 @@
 <body>
 
   <nav style="background-color: #151D3B;" class="navStyle">
-    <a href="./index.html" style="color: #fff;">OS LAB</a>
+    <a href="./index.html" style="color: #fff;">Process Scheduler</a>
     <div class="nav-links" id="navLinks">
       <i class="fas fa-window-close" onclick="hideMenu()"></i>
       <ul>
         <li><a href="../index.html">HOME</a></li>
         <li><a href="../docs.html">DOCS</a></li>
         <!-- <li><a href="blog.html">BLOG</a></li> -->
-        <li><a href="ganttcharts.html">SIMULATOR</a></li>
         
 
       </ul>
@@ -136,36 +135,36 @@
         <tr id="row_1" class="collapse in">
           <th> P1</th>
           <td><input id="arrive_1" type="number" class="form-control" min="0" value="0" /></td>
-          <td><input type="number" id="burst_1" class="form-control" min="1" value="5" /></td>
+          <td><input type="number" id="burst_1" class="form-control" min="1" value="10" /></td>
           <td class="priority collapse"><input id="priority_1" type="number" class="form-control" value="1" /></td>
         </tr>
 
         <tr id="row_2" class="collapse in">
           <th> P2 </th>
-          <td><input id="arrive_2" type="number" class="form-control" value="0" /></td>
-          <td><input type="number" id="burst_2" class="form-control" value="2" /></td>
+          <td><input id="arrive_2" type="number" class="form-control" value="1" /></td>
+          <td><input type="number" id="burst_2" class="form-control" value="5" /></td>
           <td class="priority collapse"><input id="priority_2" type="number" class="form-control" value="2" /></td>
         </tr>
 
         <tr id="row_3" class="collapse in">
           <th> P3 </th>
-          <td><input id="arrive_3" type="number" class="form-control" value="0" /></td>
-          <td><input id="burst_3" type="number" class="form-control" value="4" /></td>
+          <td><input id="arrive_3" type="number" class="form-control" value="2" /></td>
+          <td><input id="burst_3" type="number" class="form-control" value="8" /></td>
           <td class="priority collapse"><input id="priority_3" type="number" class="form-control" value="3" /></td>
         </tr>
 
         <tr id="row_4" class="collapse ">
           <th> P4 </th>
-          <td><input id="arrive_4" type="number" class="form-control" value="0" /></td>
-          <td><input id="burst_4" type="number" class="form-control" value="1" /></td>
+          <td><input id="arrive_4" type="number" class="form-control" value="3" /></td>
+          <td><input id="burst_4" type="number" class="form-control" value="6" /></td>
           <td class="priority collapse"><input id="priority_4" type="number" class="form-control" value="4" /></td>
         </tr>
 
         <tr id="row_5" class="collapse">
           <th> P5 </th>
-          <td><input id="arrive_5" type="number" class="form-control" value="0" /></td>
-          <td><input id="burst_5" type="number" class="form-control" value="1" /></td>
-          <td class="priority collapse"><input id="priority_5" type="number" class="form-control" value="5" /></td>
+          <td><input id="arrive_5" type="number" class="form-control" value="4" /></td>
+          <td><input id="burst_5" type="number" class="form-control" value="12" /></td>
+          <td class="priority collapse"><input id="priority_5" type="number" class="form-control" value="6" /></td>
         </tr>
 
         <tr id="row_6" class="collapse">
@@ -234,6 +233,8 @@
               <li><a calcStyle="SRJF" id="fancy_calc">Shortest Remaing Job First (premptive)</a></li>
               <li><a calcStyle="Round Robin" id="fast_calc">Round Robin</a></li>
               <li><a calcStyle="Priority" id="fast_calc">Priority</a></li>
+              <li><a calcStyle="OSRR" id="fast_calc">Optimized Shortest Remaining Round Robin</a></li> 
+
             </ul>
           </div>
 
@@ -311,7 +312,7 @@
           <p>Click on the run button to show the Output Table</p>
           <button id="runBtn" class="runButton">Run</button>
         </div>
-
+        
         <div style="display: block; text-align: center;">
           <p>Click on the Reset button to run another program</p>
           <button onclick=(location.reload()) class="runButton">Reset</button>
@@ -362,53 +363,52 @@
 
 
     <div class="datavisulization">
-    <h2 style="text-align: center; margin-bottom: 40px;">Data Visulization</h2>
-
-
-    <!-- <div class="barChart">
-      <canvas id="myBarChart"></canvas>
-    </div> -->
+    <h2 style="text-align: center; margin-bottom: 40px;">Data Visualization</h2>
 
     <hr>
     <div class="pie" id="chartdiv">
-      <div class="first">
-        <div class="chartMenu">
-          <p>Waiting Time Chart</p>
+        <div class="first">
+            <div class="chartMenu">
+                <p>Waiting Time Chart</p>
+            </div>
+            <div class="chartCard">
+                <div class="chartBox">
+                    <canvas id="myChart" width="400" height="400"></canvas>
+                </div>
+            </div>
         </div>
-        <div class="chartCard">
-          <div class="chartBox">
-            <canvas id="myChart" width="400" height="400"></canvas>
-            <!-- <canvas id="myChart"></canvas> -->
-          </div>
+        <div class="second">
+            <div class="chartMenu">
+                <p>Turn around Time Chart</p>
+            </div>
+            <div class="chartCard">
+                <div class="chartBox">
+                    <canvas id="mytatChart" width="400" height="400"></canvas>
+                </div>
+            </div>
         </div>
-
-
-      </div>
-      <div class="second">
-        <div class="chartMenu">
-          <p>Turn around Time Chart</p>
-        </div>
-        <div class="chartCard">
-          <div class="chartBox">
-            <!-- <canvas id="myChart" width="400" height="400"></canvas> -->
-            <canvas id="mytatChart" width="400" height="400"></canvas>
-          </div>
-        </div>
-
-      </div>
+        
+        
     </div>
-  </div>
-
-
-    <span style="font-size: large; color: rgb(3, 27, 94);">CPU Utilization:
-      <div id="utilization" style="color:rgba(255, 26, 104, 1);"></div>
+    <div style="text-align: left; margin-top: 20px;">
+            <span style="font-size: large; color: rgb(3, 27, 94);">
+                Average Waiting Time: 
+                <div id="avgwt" style="display: inline; color: rgba(255, 26, 104, 1);"></div>
+            </span>
+      </div>
+        <div style="text-align: right; margin-top: 20px;">
+            <span style="font-size: large; color: rgb(3, 27, 94); margin-left: 20px;">
+                Average Turn Around Time: 
+                <div id="avgtat" style="display: inline; color: rgba(255, 26, 104, 1);"></div>
+            </span>
+        </div>
+    <!-- CPU Utilization remains outside -->
+    <span style="font-size: large; color: rgb(3, 27, 94);">
+        CPU Utilization: 
+        <div id="utilization" style="display: inline; color: rgba(255, 26, 104, 1);"></div>
     </span>
-    <span style="font-size: large; color: rgb(3, 27, 94);">Average waiting time:
-      <div id="avgwt" style="color:rgba(255, 26, 104, 1);"></div>
-    </span>
-    <span style="font-size: large; color: rgb(3, 27, 94);">Average turn around time:
-      <div id="avgtat" style="color:rgba(255, 26, 104, 1);"></div>
-    </span>
+</div>
+    
 
     <button id="explanation">Show Explanation</button>
   

@@ -13,6 +13,8 @@ class Output {
 		this.utilization = 0;
 		this.quantum = 0;
 		this.algorithm = '';
+
+		
 	}
 }
 
@@ -61,7 +63,7 @@ $(document).ready(function () {
 	run();
 
 	setTimeout(function () { run() }, 200);
-
+	
 
 
 	//used for debugging
@@ -669,62 +671,93 @@ $(document).ready(function () {
 
 		}
 	}
+	function OSRR() {
+  		sortArriveTimes();
+  		var completed = 0;
+
+  		while (isDone() == false) {
+    	// Fill gaps if no process is ready
+    	fillGaps();
+
+    	// Create ready queue of processes that have arrived and are not done
+    	var readyQueue = [];
+    	for (var i = 0; i < processArray.length; i++) {
+      	if (processArray[i].done == false && processArray[i].arrivalTime <= position) {
+        	readyQueue.push(processArray[i]);
+     	 }
+    	}
+
+    	// Sort ready queue by remaining burst time
+    	readyQueue.sort(function (a, b) {
+      		return a.burstTime - b.burstTime;
+    	});
+
+    	if (readyQueue.length == 0) {
+      		continue;
+    	}
+
+    	// Select the process with the shortest remaining time
+    	var current = readyQueue[0];
+    	var execTime = Math.min(current.burstTime, timeQuantum);
+
+    	// Add to Gantt chart
+    	bar.addItem(current.processName, execTime);
+
+    	// Update burst time and check for completion
+    	current.burstTime -= execTime;
+    	current.burstTime = parseFloat(current.burstTime.toPrecision(12));
+
+    	if (current.burstTime <= 0) {
+      		current.finished();
+      		completed++;
+    	}
+  	}
+	}
 
 
 	function run() {
-		loadValues();
+  loadValues();
 
-		
+  Selectedalgorithm = algorithm;
 
-		Selectedalgorithm = algorithm;
+  if (processArray.length > 0) {
+    sortArriveTimes();
+    position = 0;
 
-		if (processArray.length > 0) {
+    bar = new progressBar();
 
-			sortArriveTimes();
-			position = 0;
+    if (algorithm == "FCFS") {
+      $("#algorithm_explanation").text("First Come First Served will execute proccesses in the order in which they arrived");
+      FCFS();
+      processTotal = processArray;
+    } else if (algorithm == "SJF") {
+      $("#algorithm_explanation").text("Shortest Job First will execute proccesses from smallest to biggest");
+      SJF();
+      processTotal = processArray;
+    } else if (algorithm == "SRJF") {
+      $("#algorithm_explanation").text("Shortest Remaining Job First will execute proccesses from smallest to biggest. If a new proccess arrives that is smaller than the currently running proccess, it will interrupt it.");
+      SRJF();
+      processTotal = processArray;
+    } else if (algorithm == "Round Robin") {
+      $("#algorithm_explanation").text("Round Robin will execute each proccess for the duration of the time quantum. It will then move on to the next proccess. ");
+      roundRobin();
+      processTotal = processArray;
+      tq = timeQuantum;
+    } else if (algorithm == "Priority") {
+      $("#algorithm_explanation").text("Priority Scheduling will execute each process according to the assigned priority. In this case a lower priority number is better.");
+      $(".priority").collapse("show");
+      priority();
+      processTotal = processArray;
+    } else if (algorithm == "OSRR") {
+      $("#algorithm_explanation").text("Optimized Shortest Remaining Round Robin executes the process with the shortest remaining time for a time quantum, balancing fairness and efficiency.");
+      OSRR();
+      processTotal = processArray;
+      tq = timeQuantum;
+    }
 
-
-			bar = new progressBar();
-
-			if (algorithm == "FCFS") {
-				$("#algorithm_explanation").text("First Come First Served will execute proccesses in the order in which they arrived");
-				FCFS();
-				processTotal = processArray;
-			}
-
-			else if (algorithm == "SJF") {
-				$("#algorithm_explanation").text("Shortest Job First will execute proccesses from smallest to biggest");
-				SJF();
-				processTotal = processArray;
-			}
-
-			else if (algorithm == "SRJF") {
-				SRJF();
-				$("#algorithm_explanation").text("Shortest Remaining Job First will execute proccesses from smallest to biggest. If a new proccess arrives that is smaller than the currently running proccess, it will interrupt it.");
-				processTotal = processArray;
-			}
-
-			else if (algorithm == "Round Robin") {
-				$("#algorithm_explanation").text("Round Robin will execute each proccess for the duration of the time quantum. It will then move on to the next proccess. ");
-				roundRobin();
-				processTotal = processArray;
-				tq = timeQuantum;
-			}
-
-
-
-			if (algorithm == "Priority") {
-				$(".priority").collapse("show");
-				$("#algorithm_explanation").text("Priority Scheduling will execute each process according to the assigned priority. In this case a lower priority number is better.");
-				priority();
-				processTotal = processArray;
-			}
-
-			bar.displayBar();
-		}
-
-
-	}
+    bar.displayBar();
+  }
+}
 
 
 	//creates the tick marks under the gant chart
@@ -916,7 +949,7 @@ $(document).ready(function () {
 		$("#algorithm_button").html($(this).attr("calcStyle") + ' <span class="caret">');
 		algorithm = $(this).attr("calcStyle");
 
-		if (algorithm == "Round Robin") {
+		if (algorithm == "Round Robin" || algorithm == "OSRR") {
 			$("#solver_group").removeClass("hidden");
 		}
 		else {
@@ -1196,5 +1229,67 @@ $("#explanation").click(function (){
 		steps.innerHTML += '</br></br><span><span class="step">Step 2 </span> : Arrival Time Sorting is done. Now We will sort the processes according to thier burst time to select Shortest Job first</span></br><span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp Burst Time : '+ mainOutput.o_bursttime.sort(function(a,b){return a-b}) + '</span>' +  '</br></br><span><span class="step">Step 3 </span> : Here We are checking the burst time after each unit of time. If we find any process which has less burst time than current process then we allocate the cpu to that process.</br></br><span class="step">Step 4 </span> : Now We will calculate Turn around Time. We know that, </br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp TurnAround Time = Completion Time - Arrival Time</span></br><span></br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp So,</br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspTurnaround Time : '+ mainOutput.turnAroundTime +'</span></br></br> <span><span class="step">Step 5 </span> : Now We will calculate Waiting Time. We know that, </br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp Waiting Time = Turn around Time - Burst Time</span></br><span></br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp So,</br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp Waiting Time : '+ mainOutput.waitingTime +'</span>';
 	}
 
+	else if (Selectedalgorithm == 'OSRR') {
+    	steps.innerHTML += '</br></br><span><span class="step">Step 2 </span> : Arrival Time Sorting is done. Now we will maintain a ready queue of processes that have arrived and sort them by remaining burst time to select the shortest job first.</span></br><span>              Time Quantum: ' + mainOutput.quantum + '</span>' + '</br></br><span><span class="step">Step 3 </span> : For each scheduling round, the process with the shortest remaining time is executed for up to the time quantum (' + mainOutput.quantum + '). This continues until all processes are complete.</span></br></br><span><span class="step">Step 4 </span> : Now We will calculate Turn around Time. We know that, </br>              TurnAround Time = Completion Time - Arrival Time</span></br><span></br>               So,</br>              Turnaround Time : ' + mainOutput.turnAroundTime + '</span></br></br> <span><span class="step">Step 5 </span> : Now We will calculate Waiting Time. We know that, </br>               Waiting Time = Turn around Time - Burst Time</span></br><span></br>               So,</br>               Waiting Time : ' + mainOutput.waitingTime + '</span>';
+	}	
 
 });
+function compareAlgorithms() {
+  const algorithms = ['FCFS', 'SJF', 'SRJF', 'Priority', 'Round Robin', 'OSRR'];
+  const results = [];
+
+  // Save original input
+  const originalProcessCount = processCount;
+  const originalTimeQuantum = timeQuantum;
+  const originalContexSwitch = contexSwitch;
+
+  algorithms.forEach(alg => {
+    algorithm = alg;
+    run(); // Execute the algorithm
+    results.push({
+      Algorithm: alg,
+      AvgWait: mainOutput.avgWait,
+      AvgTat: mainOutput.avgtat,
+      Utilization: mainOutput.utilization,
+      GanttChart: [...bar.names] // Copy Gantt chart data
+    });
+    // Reset for next run
+    processArray = [];
+    position = 0;
+    bar = new progressBar();
+  });
+
+  // Restore original settings
+  algorithm = 'FCFS';
+  processCount = originalProcessCount;
+  timeQuantum = originalTimeQuantum;
+  contexSwitch = originalContexSwitch;
+
+  // Display results
+  console.table(results);
+
+  // Optionally, update the UI with a comparison table
+  const table = document.createElement('table');
+  table.innerHTML = `
+    <tr>
+      <th>Algorithm</th>
+      <th>Avg Wait</th>
+      <th>Avg TAT</th>
+      <th>CPU Utilization</th>
+      <th>Gantt Chart</th>
+    </tr>
+    ${results.map(r => `
+      <tr>
+        <td>${r.Algorithm}</td>
+        <td>${r.AvgWait}</td>
+        <td>${r.AvgTat}</td>
+        <td>${r.Utilization}%</td>
+        <td>${r.GanttChart.join(' -> ')}</td>
+      </tr>
+    `).join('')}
+  `;
+  document.getElementById('chartdiv').appendChild(table);
+}
+
+// Add a button to trigger comparison
+$('#compare_algorithms').click(compareAlgorithms);

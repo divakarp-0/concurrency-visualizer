@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Deadlock Detection with Wait-For Graph</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f5f5f5;
+    }
+    input, button {
+      margin: 5px;
+      padding: 8px;
+    }
+    canvas {
+      border: 1px solid #ccc;
+      margin-top: 20px;
+    }
+    #log {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 15px;
+      height: 150px;
+      overflow-y: auto;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+
+<h2>💻 Deadlock Detection with Live Wait-For Graph</h2>
+
+<label>Process: <input id="processInput" placeholder="P1"></label>
+<label>Resource: <input id="resourceInput" placeholder="R1"></label>
+<button onclick="request()">Request</button>
+<button onclick="release()">Release</button>
+<button onclick="detectDeadlock()">Detect Deadlock</button>
+
+<canvas id="wfgCanvas" width="800" height="400"></canvas>
+<div id="log">📝 Log:</div>
+
+<script>
+const canvas = document.getElementById("wfgCanvas");
+const ctx = canvas.getContext("2d");
+const logEl = document.getElementById("log");
+
+let holds = {};
+let waits = {};
+let resourceOwners = {};
+
+let positions = {}; // store node positions
+let deadlockedProcs = new Set(); // for coloring
+
+function log(msg) {
+  logEl.textContent += msg + "\n";
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function request() {
+  const p = document.getElementById("processInput").value.trim();
+  const r = document.getElementById("resourceInput").value.trim();
+  if (!p || !r) return;
+
+  holds[p] = holds[p] || [];
+  waits[p] = waits[p] || [];
+
+  if (!resourceOwners[r]) {
+    resourceOwners[r] = p;
+    holds[p].push(r);
+    log(`✅ ${p} acquired ${r}`);
+  } else {
+    if (!waits[p].includes(r)) {
+      waits[p].push(r);
+      log(`⏳ ${p} is waiting for ${r}`);
+    }
+  }
+  drawGraph();
+  detectDeadlock(); // immediate check
+}
+
+function release() {
+  const p = document.getElementById("processInput").value.trim();
+  const r = document.getElementById("resourceInput").value.trim();
+  if (!p || !r) return;
+
+  if (resourceOwners[r] === p) {
+    resourceOwners[r] = null;
+    holds[p] = holds[p].filter(x => x !== r);
+    log(`🔓 ${p} released ${r}`);
+
+    for (let q in waits) {
+      if (waits[q].includes(r)) {
+        waits[q] = waits[q].filter(x => x !== r);
+        resourceOwners[r] = q;
+        holds[q] = holds[q] || [];
+        holds[q].push(r);
+        log(`✅ ${q} acquired ${r} after waiting`);
+        break;
+      }
+    }
+  }
+  drawGraph();
+  detectDeadlock(); // immediate check
+}
+
+function detectDeadlock() {
+  const wfg = buildWaitForGraph();
+  const visited = new Set();
+  const recStack = new Set();
+  deadlockedProcs.clear();
+
+  function dfs(p) {
+    if (!visited.has(p)) {
+      visited.add(p);
+      recStack.add(p);
+
+      for (let neighbor of (wfg[p] || [])) {
+        if (!visited.has(neighbor) && dfs(neighbor)) {
+          deadlockedProcs.add(p);
+          return true;
+        }
+        if (recStack.has(neighbor)) {
+          deadlockedProcs.add(p, neighbor);
+          return true;
+        }
+      }
+    }
+    recStack.delete(p);
+    return false;
+  }
+
+  for (let p in wfg) {
+    if (dfs(p)) {
+      log(`❌ Deadlock detected involving ${[...deadlockedProcs].join(", ")}`);
+      alert("❌ Deadlock Detected!");
+      drawGraph();
+      return;
+    }
+  }
+
+  log("✔️ No deadlock detected.");
+  drawGraph();
+}
+
+function buildWaitForGraph() {
+  const wfg = {};
+  for (let p in waits) {
+    for (let r of waits[p]) {
+      const owner = resourceOwners[r];
+      if (owner && owner !== p) {
+        if (!wfg[p]) wfg[p] = [];
+        wfg[p].push(owner);
+      }
+    }
+  }
+  return wfg;
+}
+
+function drawGraph() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const processes = Object.keys({ ...holds, ...waits });
+  const resources = new Set();
+  processes.forEach(p => {
+    (holds[p] || []).forEach(r => resources.add(r));
+    (waits[p] || []).forEach(r => resources.add(r));
+  });
+
+  positions = {};
+  const spacingX = 100;
+  const spacingY = 150;
+
+  // Draw processes (top row)
+  processes.forEach((p, i) => {
+    const x = 80 + i * spacingX;
+    const y = 100;
+    positions[p] = { x, y };
+    ctx.beginPath();
+    ctx.arc(x, y, 20, 0, 2 * Math.PI);
+    ctx.fillStyle = "#add8e6";
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "#000";
+    ctx.fillText(p, x - 10, y + 5);
+  });
+
+  // Draw resources (bottom row)
+  Array.from(resources).forEach((r, i) => {
+    const x = 80 + i * spacingX;
+    const y = 300;
+    positions[r] = { x, y };
+    ctx.fillStyle = "#f9d967";
+    ctx.fillRect(x - 20, y - 20, 40, 40);
+    ctx.strokeRect(x - 20, y - 20, 40, 40);
+    ctx.fillStyle = "#000";
+    ctx.fillText(r, x - 10, y + 5);
+  });
+
+  // Draw edges: process → resource (waiting)
+  for (let p in waits) {
+    waits[p].forEach(r => {
+      drawArrow(positions[p], positions[r], "blue");
+    });
+  }
+
+  // Draw edges: resource → process (held)
+  for (let r in resourceOwners) {
+    const p = resourceOwners[r];
+    if (p && positions[r] && positions[p]) {
+      const color = (deadlockedProcs.has(p) || deadlockedProcs.has(r)) ? "red" : "green";
+      drawArrow(positions[r], positions[p], color);
+    }
+  }
+}
+
+function drawArrow(from, to, color = "black") {
+  const headlen = 10;
+  const angle = Math.atan2(to.y - from.y, to.x - from.x);
+  const tx = to.x - 20 * Math.cos(angle);
+  const ty = to.y - 20 * Math.sin(angle);
+
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(from.x, from.y);
+  ctx.lineTo(tx, ty);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(tx, ty);
+  ctx.lineTo(tx - headlen * Math.cos(angle - Math.PI / 6), ty - headlen * Math.sin(angle - Math.PI / 6));
+  ctx.lineTo(tx - headlen * Math.cos(angle + Math.PI / 6), ty - headlen * Math.sin(angle + Math.PI / 6));
+  ctx.closePath();
+  ctx.fill();
+}
+</script>
+
+
+</body>
+</html>

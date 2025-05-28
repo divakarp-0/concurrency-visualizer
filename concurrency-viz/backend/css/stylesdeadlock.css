@@ -1,0 +1,96 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 20px;
+  background-color: #f0f8ff;
+}
+
+input {
+  margin: 5px;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px 18px;
+  margin: 5px;
+  font-size: 14px;
+  border: none;
+  border-radius: 25px;
+  background-image: linear-gradient(to right, #00c6ff, #0072ff);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 114, 255, 0.2);
+}
+
+button i {
+  margin-right: 6px;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 114, 255, 0.4);
+  background-image: linear-gradient(to right, #0072ff, #00c6ff);
+}
+
+button:active {
+  transform: scale(0.96);
+}
+
+#resetBtn {
+  display: none;
+  background-image: linear-gradient(to right, #ff5f6d, #ffc371);
+}
+
+canvas {
+  border: 2px solid #0077b6;
+  margin-top: 20px;
+  background-color: #e0f7ff;
+}
+
+#log {
+  background: #ffffff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-top: 15px;
+  height: 150px;
+  overflow-y: auto;
+  white-space: pre-line;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#stateTable {
+  margin-top: 20px;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#stateTable h3 {
+  margin: 0 0 10px;
+  color: #0077b6;
+}
+
+#stateTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#stateTable th, #stateTable td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+#stateTable th {
+  background-color: #e0f7ff;
+  color: #0077b6;
+}
+
+#stateTable tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
